@@ -3,6 +3,11 @@ package com.thanh.blindhelper;
 import android.media.MediaPlayer;
 import android.util.Log;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -10,6 +15,8 @@ import java.io.IOException;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService implements
         MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener {
+    private final static String api = "http://192.168.43.136:5000/get-alert_sound?sound_name=";
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         RemoteMessage.Notification notification = remoteMessage.getNotification();
@@ -19,17 +26,29 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
         Log.d("FIREBASE", "From: " + remoteMessage.getFrom());
         Log.d("FIREBASE", "Message Notification Body: " + notification.getBody());
 
+        String fileName = notification.getBody();
 //        String url = notification.getBody();
-        String url = "https://res.cloudinary.com/dbk0cmzcb/video/upload/v1685527255/ihmmbsxyog77ugk3v96z.mp3";
+        String url = api + fileName;
         MediaPlayer mediaPlayer = new MediaPlayer();
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnPreparedListener(this);
-        try {
-            mediaPlayer.setDataSource(url);
-            mediaPlayer.prepareAsync();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        RequestQueue requestQueue = Volley.newRequestQueue(getBaseContext());
+        Log.d("LOG RESPONSE", url);
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                url,
+                response -> {
+                    Log.d("LOG RESPONSE", response);
+                    try {
+                        mediaPlayer.setDataSource(response);
+                        mediaPlayer.prepareAsync();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                },
+                error -> Log.e("LOG RESPONSE", error.toString())
+        );
+        requestQueue.add(request);
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.

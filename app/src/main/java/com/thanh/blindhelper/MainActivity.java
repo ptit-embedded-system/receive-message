@@ -7,6 +7,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,5 +36,14 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("FIREBASE", token);
                     editText.setText(token);
                 });
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        StringRequest request = new StringRequest(
+//                Request.Method.GET,
+//                "http://192.168.1.11:5000/",
+//                response -> {
+//                    Toast.makeText(this, "Connect to localhost successfully", Toast.LENGTH_SHORT).show();
+//                }, error -> Toast.makeText(this, "Connect failed", Toast.LENGTH_SHORT).show()
+//        );
+//        requestQueue.add(request);
     }
 }
